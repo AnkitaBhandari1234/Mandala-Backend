@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
+const path = require("path");
 
 
 
@@ -15,15 +16,19 @@ const port = 8000;
 //middleware
 app.use(express.json())
 app.use(cors({
-  origin: 'http://localhost:5173', 
+  origin: ["http://localhost:5173", "http://localhost:5174"], 
   credentials: true,                
 }));
+const categoryRoutes = require('./Routes/categories.routes');
 
 //routes
 app.use('/api/user', userRoute)
 
 app.use('/api/products', productRoute);
-
+// Expose images statically
+app.use("/ProductImages", express.static(path.join(__dirname, "ProductImages")));
+//categories route
+app.use('/api/categories', categoryRoutes);
 
 
 // first route in nodejs 

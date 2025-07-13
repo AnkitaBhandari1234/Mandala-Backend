@@ -1,32 +1,47 @@
-const express = require('express');
-const Product = require('../Models/product.model');
+const express = require("express");
 const router = express.Router();
+const Product = require("../Models/product.model");
 
-// GET /api/products?category=Jewelry&subCategory=Necklaces&sort=price_asc
-router.get('/', async (req, res) => {
+// GET /api/products?category=Clothing&subcategory=Shirts&minPrice=10&maxPrice=100&minRating=3
+router.get("/", async (req, res) => {
   try {
-    const { category, subCategory, sort } = req.query;
+    const {
+      category,
+      subcategory,
+      minPrice,
+      maxPrice,
+      minRating
+    } = req.query;
 
     const filter = {};
-    if (category) filter.category = category;
-    if (subCategory) filter.subCategory = subCategory;
 
-    let query = Product.find(filter);
-
-    // Sorting
-    if (sort) {
-      if (sort === 'price_asc') query = query.sort({ price: 1 });
-      else if (sort === 'price_desc') query = query.sort({ price: -1 });
-      else if (sort === 'rating_desc') query = query.sort({ rating: -1 });
-      // Add other sorts as needed
+    // Category filter
+    if (category) {
+      filter.category = { $regex: new RegExp(category, "i") }; // case-insensitive match
     }
 
-    const products = await query.exec();
+    // Subcategory filter
+    if (subcategory) {
+      filter.subcategory = { $regex: new RegExp(subcategory, "i") };
+    }
 
+    // Price range filter
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) filter.price.$gte = Number(minPrice);
+      if (maxPrice) filter.price.$lte = Number(maxPrice);
+    }
+
+    // Rating filter
+    if (minRating) {
+      filter.rating = { $gte: Number(minRating) };
+    }
+
+    const products = await Product.find(filter);
     res.json(products);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("Error filtering products:", error);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
