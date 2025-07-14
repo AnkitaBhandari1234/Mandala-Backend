@@ -8,6 +8,7 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Wall Hanging",
+    order: "Best Seller"  
   },
   {
     name: "Cozy Wool Seat Mat",
@@ -18,6 +19,7 @@ module.exports = [
     rating: 4.8,
     category: "Textiles",
     subcategory: "Mats",
+    order: "Crafted"
   },
   {
     name: "Owl Design Dream Catcher",
@@ -28,6 +30,7 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Wall Hanging",
+    order: "New"
   },
   {
     name: "Multicolor Dream Catcher",
@@ -38,6 +41,7 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Wall Hanging",
+    order: "Eco Friendly"
   },
   {
     name: "Dragon Printed Lamp Shades",
@@ -48,6 +52,7 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Lamps & Lanterns",
+    order: "Crafted"
   },
   {
     name: "Buddha Lamp Shades ",
@@ -58,6 +63,7 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Lamps & Lanterns",
+    order: "New"
   },
   {
     name: "Green Circular Big Lamp Shades ",
@@ -68,6 +74,7 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Lamps & Lanterns",
+    order: "Eco Friendly"
   },
   {
     name: "Blue Circular Big Lamp Shades ",
@@ -78,6 +85,7 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Lamps & Lanterns",
+    order: "Best Seller"
   },
   {
     name: " Pink Shawl For Women ",
@@ -88,6 +96,7 @@ module.exports = [
     rating: 4.8,
     category: "Textiles",
     subcategory: "Shawls & Scarves",
+    order: "New"
   },
   {
     name: " Multicolor Handmade Cotton Shawl For Women ",
@@ -98,6 +107,7 @@ module.exports = [
     rating: 4.8,
     category: "Textiles",
     subcategory: "Shawls & Scarves",
+    order: "Best Seller"
   },
   {
     name: " Vintage Lace Table Cover ",
@@ -108,6 +118,6 @@ module.exports = [
     rating: 4.8,
     category: "Textiles",
     subcategory: "Cushion & Table Covers",
-  },
-  
+    order: "Crafted"
+  }
 ];

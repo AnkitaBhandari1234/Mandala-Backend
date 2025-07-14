@@ -21,6 +21,9 @@ app.use(cors({
 }));
 const categoryRoutes = require('./Routes/categories.routes');
 
+const featuredRoute = require("./Routes/featured.routes");
+app.use("/api/products/featured", featuredRoute);
+
 //routes
 app.use('/api/user', userRoute)
 

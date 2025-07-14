@@ -13,6 +13,7 @@ const productSchema = new mongoose.Schema(
     rating: { type: Number, default: 0 },
     category: String,
     subcategory: String,
+      order: String,
   },
   { timestamps: true }
 );
