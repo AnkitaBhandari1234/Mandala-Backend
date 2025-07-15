@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password,role } = req.body;
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(400).json({ message: "User already exists" });
@@ -40,16 +40,16 @@ exports.loginUser = async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       console.log("Password mismatch for user:", email);
-      return res.status(400).json({ message: " Password" });
+      return res.status(400).json({ message: "Invalid email or Password" });
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      { userId: user._id, email: user.email,role:user.role, },
       process.env.SECRET_KEY,
       { expiresIn: "1d" }
     );
 
-    res.json({ token, user: { id: user._id, email: user.email } });
+    res.json({ token, user: { id: user._id, email: user.email,role:user.role, } });
   } catch (error) {
     console.log("Login error:", error);
     res.status(500).json({ message: "Server error" });

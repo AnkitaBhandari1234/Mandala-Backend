@@ -8,7 +8,8 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Wall Hanging",
-    order: "Best Seller"  
+    order: "Best Seller"  ,
+     stock: 15
   },
   {
     name: "Cozy Wool Seat Mat",
@@ -19,7 +20,8 @@ module.exports = [
     rating: 4.8,
     category: "Textiles",
     subcategory: "Mats",
-    order: "Crafted"
+    order: "Crafted",
+     stock: 10,
   },
   {
     name: "Owl Design Dream Catcher",
@@ -30,7 +32,8 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Wall Hanging",
-    order: "New"
+    order: "New",
+     stock: 19,
   },
   {
     name: "Multicolor Dream Catcher",
@@ -41,7 +44,8 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Wall Hanging",
-    order: "Eco Friendly"
+    order: "Eco Friendly",
+    stock: 19,
   },
   {
     name: "Dragon Printed Lamp Shades",
@@ -52,7 +56,8 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Lamps & Lanterns",
-    order: "Crafted"
+    order: "Crafted",
+    stock: 19,
   },
   {
     name: "Buddha Lamp Shades ",
@@ -85,7 +90,8 @@ module.exports = [
     rating: 4.8,
     category: "Decor",
     subcategory: "Lamps & Lanterns",
-    order: "Best Seller"
+    order: "Best Seller",
+    stock: 19,
   },
   {
     name: " Pink Shawl For Women ",
@@ -96,7 +102,8 @@ module.exports = [
     rating: 4.8,
     category: "Textiles",
     subcategory: "Shawls & Scarves",
-    order: "New"
+    order: "New",
+    stock: 10,
   },
   {
     name: " Multicolor Handmade Cotton Shawl For Women ",
