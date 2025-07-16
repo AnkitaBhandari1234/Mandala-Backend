@@ -42,7 +42,7 @@ app.use('/api/dashboard', dashboardRoutes);
 
 app.use('/api/products', productRoute);
 // Expose images statically
-app.use("/ProductImages", express.static(path.join(__dirname, "ProductImages")));
+app.use("/ProductImages", express.static(path.join(__dirname, 'public/ProductImages')));
 //categories route
 app.use('/api/categories', categoryRoutes);
 //for adding product by seller

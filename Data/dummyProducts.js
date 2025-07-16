@@ -91,7 +91,7 @@ module.exports = [
     category: "Decor",
     subcategory: "Lamps & Lanterns",
     order: "Best Seller",
-    stock: 19,
+    
   },
   {
     name: " Pink Shawl For Women ",
@@ -102,8 +102,7 @@ module.exports = [
     rating: 4.8,
     category: "Textiles",
     subcategory: "Shawls & Scarves",
-    order: "New",
-    stock: 10,
+    order: "New"
   },
   {
     name: " Multicolor Handmade Cotton Shawl For Women ",

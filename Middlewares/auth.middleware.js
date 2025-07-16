@@ -3,11 +3,15 @@ const User = require("../Models/user.model");
 
 exports.requireAuth =async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
+  // console.log(token,"here");
  
   if (!token) return res.status(401).json({ message: "Unauthorized: No token" });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded","here");
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log(decoded,"here");
+
    const user = await User.findById(decoded.userId);
     if (!user) return res.status(401).json({ message: "User not found" });
     req.user = user;

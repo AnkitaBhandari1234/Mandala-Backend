@@ -44,6 +44,9 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+//post for product
+
+
 
 
 
