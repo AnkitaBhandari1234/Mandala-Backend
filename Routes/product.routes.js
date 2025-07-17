@@ -61,4 +61,28 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+
+// POST /api/products/recommend
+router.post("/recommend", async (req, res) => {
+  try {
+      const { tags = [], attributes = [], productId } = req.body;
+
+    const filter = {
+      $or: [
+        { tags: { $in: tags } },
+        { attributes: { $in: attributes } },
+      ],
+      _id: { $ne: productId }, // ✅ exclude the current product
+    };
+
+    const recommended = await Product.find(filter).limit(10); // limit if needed
+    res.json(recommended);
+  } catch (err) {
+    console.error("Error recommending products:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+
 module.exports = router;

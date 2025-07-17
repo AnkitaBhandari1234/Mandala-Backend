@@ -12,7 +12,7 @@ exports.registerUser = async (req, res) => {
     if (existing) return res.status(400).json({ message: "User already exists" });
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password: hashPassword });
+    const newUser = await User.create({ name, email, password: hashPassword,role });
 
     res.status(201).json({ message: "User registered successfully", user: newUser });
   } catch (err) {
@@ -44,12 +44,12 @@ exports.loginUser = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: user._id, email: user.email,role:user.role, },
+      { userId: user._id, email: user.email,role:user.role,name:user.name },
       process.env.SECRET_KEY,
       { expiresIn: "1d" }
     );
 
-    res.json({ token, user: { id: user._id, email: user.email,role:user.role, } });
+    res.json({ token, user: { id: user._id, email: user.email,role:user.role,name:user.name } });
   } catch (error) {
     console.log("Login error:", error);
     res.status(500).json({ message: "Server error" });

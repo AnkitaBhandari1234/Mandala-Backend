@@ -23,6 +23,7 @@ const dashboardRoutes = require('./Routes/dashboard.routes');
 const addProductRoutes=require('./Routes/addproduct.routes');
 const orderRoutes=require('./Routes/order.routes');
 const reviewRoutes = require("./Routes/review.routes");
+const sellerRoutes = require("./Routes/seller.routes");
 
 
 
@@ -53,6 +54,9 @@ app.use('/api/categories', categoryRoutes);
 app.use("/api/addproducts", addProductRoutes);
 // Mount routes
 app.use("/api/reviews", reviewRoutes);
+
+// for seller
+app.use("/api/seller", sellerRoutes);
 
 
 // running the backend on the port 

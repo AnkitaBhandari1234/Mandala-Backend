@@ -3,7 +3,10 @@ const bcrypt =require('bcryptjs');
 
 
 const userSchema = new mongoose.Schema({
-  name:String,
+  name:{
+    type:String,
+    required:true,
+  },
   email: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true, minlength: 4 },
   role:{
@@ -14,6 +17,7 @@ const userSchema = new mongoose.Schema({
 }, {
   timestamps: true,
 });
+
 
 // Method to compare plain password with hashed
 userSchema.methods.comparePassword =async function(password) {
