@@ -6,7 +6,7 @@ const path = require("path");
 
 const {
   requireAuth,
-  verifyAdminOrSeller,
+  isAdminOrSeller,
 } = require("../Middlewares/auth.middleware");
 
 // Upload config
@@ -22,7 +22,7 @@ const upload = multer({ storage });
 router.post(
   "/",
   requireAuth,
-  verifyAdminOrSeller,
+  isAdminOrSeller,
   upload.single("image"),
   async (req, res) => {
     try {
@@ -66,7 +66,7 @@ router.post(
 
 // routes/product.route.js
 
-router.delete("/:id", requireAuth, verifyAdminOrSeller, async (req, res) => {
+router.delete("/:id", requireAuth, isAdminOrSeller, async (req, res) => {
   console.log("Attempting to delete ID:", req.params.id); // ✅ ADD THIS
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);

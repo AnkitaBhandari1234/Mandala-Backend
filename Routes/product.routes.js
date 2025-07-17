@@ -5,13 +5,7 @@ const Product = require("../Models/product.model");
 // GET /api/products?category=Clothing&subcategory=Shirts&minPrice=10&maxPrice=100&minRating=3
 router.get("/", async (req, res) => {
   try {
-    const {
-      category,
-      subcategory,
-      minPrice,
-      maxPrice,
-      minRating
-    } = req.query;
+    const { category, subcategory, minPrice, maxPrice, minRating } = req.query;
 
     const filter = {};
 
@@ -44,10 +38,27 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-//post for product
 
+// GET product details by ID 
+router.get("/:id", async (req, res) => {
+  try {
+    const productIdOrSlug = req.params.id;
 
+    // Try finding by MongoDB _id first
+    let product = null;
+    if (productIdOrSlug.match(/^[0-9a-fA-F]{24}$/)) {
+      product = await Product.findById(productIdOrSlug);
+    }
 
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
+    res.json(product);
+  } catch (error) {
+    console.error("Error fetching product by ID :", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 module.exports = router;

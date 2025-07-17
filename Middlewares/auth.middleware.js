@@ -1,18 +1,13 @@
 const jwt = require("jsonwebtoken");
 const User = require("../Models/user.model");
 
-exports.requireAuth =async (req, res, next) => {
+const requireAuth = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
-  // console.log(token,"here");
- 
   if (!token) return res.status(401).json({ message: "Unauthorized: No token" });
 
   try {
-    console.log("decoded","here");
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    console.log(decoded,"here");
-
-   const user = await User.findById(decoded.userId);
+    const user = await User.findById(decoded.userId);
     if (!user) return res.status(401).json({ message: "User not found" });
     req.user = user;
     next();
@@ -21,17 +16,24 @@ exports.requireAuth =async (req, res, next) => {
   }
 };
 
-exports.verifyAdmin = (req, res, next) => {
+const isAdmin = (req, res, next) => {
   if (req.user.role === "admin") return next();
-   return res.status(403).json({ message: "Admins only" });
+  return res.status(403).json({ message: "Admins only" });
 };
 
-exports.verifySeller = (req, res, next) => {
+const isSeller = (req, res, next) => {
   if (req.user.role === "seller") return next();
   return res.status(403).json({ message: "Sellers only" });
 };
 
-exports.verifyAdminOrSeller = (req, res, next) => {
+const isAdminOrSeller = (req, res, next) => {
   if (["admin", "seller"].includes(req.user.role)) return next();
-   return res.status(403).json({ message: "Admins or Sellers only" });
+  return res.status(403).json({ message: "Admins or Sellers only" });
+};
+
+module.exports = {
+  requireAuth,
+  isAdmin,
+  isSeller,
+  isAdminOrSeller,
 };

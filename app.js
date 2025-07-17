@@ -21,6 +21,8 @@ const featuredRoute = require("./Routes/featured.routes");
 const categoryRoutes = require('./Routes/categories.routes');
 const dashboardRoutes = require('./Routes/dashboard.routes');
 const addProductRoutes=require('./Routes/addproduct.routes');
+const orderRoutes=require('./Routes/order.routes');
+const reviewRoutes = require("./Routes/review.routes");
 
 
 
@@ -38,6 +40,8 @@ app.use("/api/products/featured", featuredRoute);
 app.use('/api/user', userRoute)
 //for dashboard
 app.use('/api/dashboard', dashboardRoutes);
+//  Mount the order route
+app.use("/api/orders", orderRoutes);
 
 
 app.use('/api/products', productRoute);
@@ -47,6 +51,8 @@ app.use("/ProductImages", express.static(path.join(__dirname, 'public/ProductIma
 app.use('/api/categories', categoryRoutes);
 //for adding product by seller
 app.use("/api/addproducts", addProductRoutes);
+// Mount routes
+app.use("/api/reviews", reviewRoutes);
 
 
 // running the backend on the port 

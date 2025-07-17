@@ -2,10 +2,10 @@ const express = require("express");
 const router = express.Router();
 const {
   requireAuth,
-  verifySeller,
+  isSeller,
  
-  verifyAdminOrSeller,
-  verifyAdmin
+ isAdminOrSeller,
+  isAdmin
 } = require("../Middlewares/auth.middleware");
 
 const {
@@ -15,11 +15,11 @@ const {
 } = require("../Controllers/dashboard.controller");
 
 // Dashboard info for admin or seller
-router.get("/", requireAuth, verifyAdminOrSeller, getDashboardInfo);
+router.get("/", requireAuth, isAdminOrSeller, getDashboardInfo);
 
 // List of users - only admin can access
-router.get("/users", requireAuth, verifyAdmin, getAllUsers);
+router.get("/users", requireAuth,isAdmin, getAllUsers);
 
-router.get("/seller/products", requireAuth, verifySeller, getSellerProducts);
+router.get("/seller/products", requireAuth, isSeller, getSellerProducts);
 
 module.exports = router;
