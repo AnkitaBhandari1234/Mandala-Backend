@@ -26,6 +26,7 @@ const reviewRoutes = require("./Routes/review.routes");
 const sellerRoutes = require("./Routes/seller.routes");
 
 
+const sellerRequestRoutes = require('./Routes/sellerRequest.routes');
 
 
 
@@ -57,6 +58,10 @@ app.use("/api/reviews", reviewRoutes);
 
 // for seller
 app.use("/api/seller", sellerRoutes);
+
+// for sellerverification
+app.use('/api/seller-request', sellerRequestRoutes);
+
 
 
 // running the backend on the port 

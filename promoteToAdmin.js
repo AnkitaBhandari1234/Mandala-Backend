@@ -8,7 +8,7 @@ mongoose.connect(process.env.MONGODB_URL)
   .then(async () => {
     console.log("Connected to MongoDB");
 
-    const email = "ankitabhandari376@gmail.com"; // Change to your actual user's email
+    const email = "abimbhandari@gmail.com"; // Change to your actual user's email
 
     const updated = await User.updateOne(
       { email },

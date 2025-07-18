@@ -8,7 +8,7 @@ exports.getDashboardInfo = async (req, res) => {
 
 // Return all normal users (not admin/seller)
 exports.getAllUsers = async (req, res) => {
-  const users = await User.find({ role: "user" }).select("-password");
+  const users = await User.find({},'name role email').select("-password");
   res.json({ users });
 };
 exports.getSellerProducts = async (req, res) => {

@@ -7,6 +7,7 @@ const path = require("path");
 const {
   requireAuth,
   isAdminOrSeller,
+  isSeller,
 } = require("../Middlewares/auth.middleware");
 
 // Upload config
@@ -23,12 +24,13 @@ router.post(
   "/",
   requireAuth,
   isAdminOrSeller,
+  isSeller,
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, price, category, subcategory, description,stock } = req.body;
+      const { name, price, category, subcategory, description,stock,subname } = req.body;
 
-      if (!name || !price || !category || !description) {
+      if (!name || !price || !category || !description || !subname) {
         return res.status(400).json({ message: "Please provide all required fields" });
       }
 
@@ -52,6 +54,7 @@ router.post(
         category,
         subcategory,
         stock,
+        subname,
         sellerId: req.user._id,
       });
 
