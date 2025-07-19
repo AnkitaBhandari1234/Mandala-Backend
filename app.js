@@ -32,6 +32,7 @@ const sellerRequestRoutes = require('./Routes/sellerRequest.routes');
 
 
 
+
 // first route in nodejs 
 app.get('/', (req, res)=>{
     res.send("welcome to backend")
@@ -61,6 +62,9 @@ app.use("/api/seller", sellerRoutes);
 
 // for sellerverification
 app.use('/api/seller-request', sellerRequestRoutes);
+
+// for deleting user or seller
+app.use("/api", dashboardRoutes);
 
 
 
