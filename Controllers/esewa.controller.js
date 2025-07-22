@@ -1,45 +1,85 @@
-// controllers/esewa.controller.js
-const crypto = require("crypto");
+// backend/controllers/esewa.controller.js
 
-const initEsewa = (req, res) => {
-  const {
-    amount, // amt
-    tax_amount, // not needed separately, add in psc or pdc if any
-    total_amount, // tAmt
-    transaction_uuid, // pid
-    product_code, // scd (merchant code)
-    product_service_charge, // psc
-    product_delivery_charge, // pdc
-    success_url, // su
-    failure_url, // fu
-  } = req.body;
+const { EsewaPaymentGateway, EsewaCheckStatus } = require("esewajs");
+const Transaction = require("../Models/transcation.model");
 
+const EsewaInitiatePayment = async (req, res) => {
+  const { amount, productId } = req.body;
 
-const secretKey = process.env.ESEWA_SECRET_KEY;
+  try {
+    const reqPayment = await EsewaPaymentGateway(
+      amount,
+      0,
+      0,
+      0,
+      productId,
+      process.env.MERCHANT_ID,
+      process.env.SECRET,
+      process.env.SUCCESS_URL,
+      process.env.FAILURE_URL,
+      process.env.ESEWAPAYMENT_URL,
+      undefined,
+      undefined
+    );
 
-  const signed_field_names = "amt,pid,scd,tAmt,psc,pdc,su,fu";
+    if (!reqPayment) {
+      return res.status(400).json("Error sending data to eSewa");
+    }
 
-  const message = `amt=${amount},pid=${transaction_uuid},scd=${product_code},tAmt=${total_amount},psc=${product_service_charge},pdc=${product_delivery_charge},su=${success_url},fu=${failure_url}`;
+    if (reqPayment.status === 200) {
+      const transaction = new Transaction({
+        product_id: productId,
+        amount: amount,
+      });
 
-  const signature = crypto
-    .createHmac("sha256", secretKey)
-    .update(message)
-    .digest("base64");
+      await transaction.save();
+      console.log("Transaction saved");
 
-  const payload = {
-    amt: amount, // amount to pay
-    psc: product_service_charge || "0",
-    pdc: product_delivery_charge || "0",
-    tAmt: total_amount, // total amount
-    pid: transaction_uuid,
-    scd: product_code, // merchant code like EPAYTEST
-    su: success_url,
-    fu: failure_url,
-     signed_field_names,
-    signature,
-  };
-
-  return res.json(payload);
+      return res.send({
+        url: reqPayment.request.res.responseUrl,
+      });
+    }
+  } catch (error) {
+    console.error("Esewa Init Error:", error.message);
+    return res.status(500).json("Esewa Payment Init Failed");
+  }
 };
 
-module.exports = { initEsewa };
+const paymentStatus = async (req, res) => {
+  const { product_id } = req.body;
+
+  try {
+    const transaction = await Transaction.findOne({ product_id });
+
+    if (!transaction) {
+      return res.status(400).json({ message: "Transaction not found" });
+    }
+
+    const paymentStatusCheck = await EsewaCheckStatus(
+      transaction.amount,
+      transaction.product_id,
+      process.env.MERCHANT_ID,
+      process.env.ESEWAPAYMENT_STATUS_CHECK_URL
+    );
+
+    if (paymentStatusCheck.status === 200) {
+      transaction.status = paymentStatusCheck.data.status;
+      await transaction.save();
+
+      return res.status(200).json({
+        message: "Transaction status updated successfully",
+        status: transaction.status,
+      });
+    } else {
+      return res.status(400).json({ message: "Failed to fetch payment status" });
+    }
+  } catch (error) {
+    console.error("Error updating transaction status:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+module.exports = {
+  EsewaInitiatePayment,
+  paymentStatus,
+};

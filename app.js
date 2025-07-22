@@ -28,8 +28,8 @@ const sellerRoutes = require("./Routes/seller.routes");
 
 
 const sellerRequestRoutes = require('./Routes/sellerRequest.routes');
-const paymentRoutes = require("./Routes/payment.routes");
-app.use("/api", paymentRoutes);
+const { EsewaInitiatePayment, paymentStatus } = require('./Controllers/esewa.controller');
+
 
 
 
@@ -68,6 +68,9 @@ app.use('/api/seller-request', sellerRequestRoutes);
 
 // for deleting user or seller
 app.use("/api", dashboardRoutes);
+
+app.post("/api/initiate-payment", EsewaInitiatePayment);
+app.post("/api/payment-status", paymentStatus);
 
 
 const transporter = nodemailer.createTransport({
