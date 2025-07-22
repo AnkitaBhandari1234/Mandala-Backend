@@ -26,7 +26,7 @@ const getOrderById = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
+// create a new order (Buyer)
 const createOrder = async (req, res) => {
   try {
     const {
@@ -58,11 +58,21 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-
+// 🟩 GET ORDERS FOR LOGGED-IN USER
+const getMyOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    console.error("Error fetching user's orders:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 module.exports = {
   getAllOrders,
   getOrderById,
   createOrder,
   createOrder,
+  getMyOrders,
 };

@@ -62,3 +62,17 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: "Failed to delete product", error: err.message });
   }
 };
+
+// update stock
+exports.updateStock = async (req, res) => {
+  try {
+    const product = await Product.findOne({ _id: req.params.id, seller: req.user._id });
+    if (!product) return res.status(404).json({ message: "Product not found" });
+
+    product.stock = req.body.stock;
+    await product.save();
+    res.json({ message: "Stock updated successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};

@@ -26,4 +26,6 @@ router.put("/products/:id", upload.single("image"), sellerController.updateProdu
 // Delete product
 router.delete("/products/:id", sellerController.deleteProduct);
 
+// update stocks
+router.put("/products/:id/stock", requireAuth, isSeller,sellerController.updateStock);
 module.exports = router;

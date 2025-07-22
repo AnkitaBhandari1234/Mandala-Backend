@@ -2,6 +2,8 @@ const express = require('express');
 require('dotenv').config();
 const cors = require('cors');
 const path = require("path");
+const nodemailer = require("nodemailer");
+
 
 const app = express();
 app.use(cors({
@@ -16,8 +18,7 @@ app.use(express.json())
 const userRoute = require('./Routes/user.routes');
 const productRoute = require('./Routes/product.routes');
 const mongodb = require('./DB/mangooseDb');
-const port = 8000;
-const featuredRoute = require("./Routes/featured.routes");
+
 const categoryRoutes = require('./Routes/categories.routes');
 const dashboardRoutes = require('./Routes/dashboard.routes');
 const addProductRoutes=require('./Routes/addproduct.routes');
@@ -27,7 +28,8 @@ const sellerRoutes = require("./Routes/seller.routes");
 
 
 const sellerRequestRoutes = require('./Routes/sellerRequest.routes');
-
+const paymentRoutes = require("./Routes/payment.routes");
+app.use("/api", paymentRoutes);
 
 
 
@@ -37,7 +39,8 @@ const sellerRequestRoutes = require('./Routes/sellerRequest.routes');
 app.get('/', (req, res)=>{
     res.send("welcome to backend")
 })
-app.use("/api/products/featured", featuredRoute);
+app.use('/api/products', productRoute);
+
 
 // for user routes
 app.use('/api/user', userRoute)
@@ -47,7 +50,6 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use("/api/orders", orderRoutes);
 
 
-app.use('/api/products', productRoute);
 // Expose images statically
 app.use("/ProductImages", express.static(path.join(__dirname, 'public/ProductImages')));
 //categories route
@@ -55,6 +57,7 @@ app.use('/api/categories', categoryRoutes);
 //for adding product by seller
 app.use("/api/addproducts", addProductRoutes);
 // Mount routes
+
 app.use("/api/reviews", reviewRoutes);
 
 // for seller
@@ -65,6 +68,71 @@ app.use('/api/seller-request', sellerRequestRoutes);
 
 // for deleting user or seller
 app.use("/api", dashboardRoutes);
+
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+// In-memory OTP store per email - for demo only, not production ready
+const otpStore = new Map();
+
+/**
+ * Send OTP to email endpoint
+ * Body: { email }
+ */
+app.post("/api/otp/send", async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ success: false, message: "Email is required" });
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  try {
+    await transporter.sendMail({
+      from: `"Your Store" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "OTP Verification Code",
+      html: `<h2>Your OTP Code is: <b>${otp}</b></h2><p>This code expires in 10 minutes.</p>`,
+    });
+
+    // Save OTP with expiration 10 minutes
+    otpStore.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000 });
+
+    return res.json({ success: true, message: "OTP sent to email" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Failed to send OTP" });
+  }
+});
+
+/**
+ * Verify OTP endpoint
+ * Body: { email, otp }
+ */
+app.post("/api/otp/verify", (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) return res.status(400).json({ success: false, message: "Email and OTP are required" });
+
+  const record = otpStore.get(email);
+  if (!record) return res.status(400).json({ success: false, message: "No OTP requested for this email" });
+
+  if (Date.now() > record.expiresAt) {
+    otpStore.delete(email);
+    return res.status(400).json({ success: false, message: "OTP expired" });
+  }
+
+  if (otp === record.otp) {
+    otpStore.delete(email);
+    return res.json({ success: true, message: "OTP verified successfully" });
+  }
+
+  return res.status(400).json({ success: false, message: "Invalid OTP" });
+});
+
 
 
 

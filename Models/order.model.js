@@ -10,6 +10,7 @@ const orderItemSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
+   
 });
 
 const shippingAddressSchema = new mongoose.Schema({
@@ -33,8 +34,8 @@ const orderSchema = new mongoose.Schema(
     paidAt: { type: Date },
     orderStatus: {
       type: String,
+      enum: ["Pending", , "Shipped", "Delivered"],
       default: "Pending",
-      enum: ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"],
     },
   },
   { timestamps: true }

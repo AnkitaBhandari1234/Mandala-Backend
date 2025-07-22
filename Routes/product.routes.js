@@ -1,7 +1,26 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../Models/product.model");
+const { searchProducts } = require("../Controllers/product.controller")
 
+
+
+
+// routes/productRoutes.js
+router.get("/search", searchProducts);
+
+router.get('/featured', async (req, res) => {
+  try {
+    // Find products where 'order' field exists and is not empty string
+    const products = await Product.find({ 
+      order: { $exists: true, $ne: "" } 
+    }).limit(8);
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching featured products', error: error.message });
+  }
+});
 // GET /api/products?category=Clothing&subcategory=Shirts&minPrice=10&maxPrice=100&minRating=3
 router.get("/", async (req, res) => {
   try {
@@ -14,10 +33,12 @@ router.get("/", async (req, res) => {
       filter.category = { $regex: new RegExp(category, "i") }; // case-insensitive match
     }
 
-    // Subcategory filter
-    if (subcategory) {
-      filter.subcategory = { $regex: new RegExp(subcategory, "i") };
-    }
+    // Subcategory filter - supports multiple (comma-separated)
+if (subcategory) {
+  const subcategoryList = subcategory.split(",").map((s) => s.trim());
+  filter.subcategory = { $in: subcategoryList };
+}
+
 
     // Price range filter
     if (minPrice || maxPrice) {
@@ -82,6 +103,7 @@ router.post("/recommend", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 
 

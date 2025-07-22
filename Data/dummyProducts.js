@@ -18,6 +18,7 @@ module.exports = [
     category: "Decor",
     subcategory: "Wall Hanging",
     order: "Best Seller",
+     
     stock: 15,
     tags: ["handmade", "boho", "spiritual"],
     materials: ["cotton", "wood", "feather"],
@@ -40,6 +41,7 @@ module.exports = [
     category: "Textiles",
     subcategory: "Mats",
     order: "Crafted",
+   
     stock: 10,
     tags: ["handmade", "eco-friendly", "meditation"],
     materials: ["wool", "cotton"],
@@ -62,6 +64,7 @@ module.exports = [
     category: "Decor",
     subcategory: "Wall Hanging",
     order: "New Arrival",
+    
     stock: 19,
     tags: ["owl", "handmade", "nature"],
     materials: ["wood", "feather", "cotton"],
