@@ -10,13 +10,26 @@ const orderItemSchema = new mongoose.Schema({
     ref: "Product",
     required: true,
   },
-   
+    seller: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    
+  },
 });
 
 const shippingAddressSchema = new mongoose.Schema({
  
  
-  country: { type: String, required: true },
+ firstName: { type: String, required: true },
+ lastName: { type: String, required: true },
+  phone: { type: String, required: true },
+  address: { type: String, required: true },
+  city: { type: String, required: true },
+  district: { type: String, required: true },
+  province: { type: String, required: true },
+ 
+  country: { type: String, default: "Nepal" }
+
 });
 
 const orderSchema = new mongoose.Schema(
@@ -34,7 +47,7 @@ const orderSchema = new mongoose.Schema(
     paidAt: { type: Date },
     orderStatus: {
       type: String,
-      enum: ["Pending", , "Shipped", "Delivered"],
+      enum: ["Pending",  "Shipped", "Delivered"],
       default: "Pending",
     },
   },
