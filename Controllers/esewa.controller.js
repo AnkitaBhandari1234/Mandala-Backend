@@ -1,63 +1,66 @@
-// backend/controllers/esewa.controller.js
-
+// backend/Controllers/esewa.controller.js
 const { EsewaPaymentGateway, EsewaCheckStatus } = require("esewajs");
 const Transaction = require("../Models/transcation.model");
 
 const EsewaInitiatePayment = async (req, res) => {
-  const { amount, productId } = req.body;
+  const { amount, transactionId ,userId} = req.body;
+
+  // Basic validation
+  if (!amount || !transactionId || !userId) {
+    return res.status(400).json({ message: "Amount, transactionId and userId are required" });
+  }
 
   try {
     const reqPayment = await EsewaPaymentGateway(
       amount,
-      0,
-      0,
-      0,
-      productId,
+      0, // tax amount
+      0, // service charge
+      0, // delivery charge
+     transactionId,
       process.env.MERCHANT_ID,
       process.env.SECRET,
       process.env.SUCCESS_URL,
       process.env.FAILURE_URL,
-      process.env.ESEWAPAYMENT_URL,
-      undefined,
-      undefined
+      process.env.ESEWAPAYMENT_URL
     );
 
-    if (!reqPayment) {
-      return res.status(400).json("Error sending data to eSewa");
+    if (!reqPayment || reqPayment.status !== 200) {
+      return res.status(400).json({ message: "Error initiating payment" });
     }
 
-    if (reqPayment.status === 200) {
-      const transaction = new Transaction({
-        product_id: productId,
-        amount: amount,
-      });
+    // Save transaction in DB
+    const transaction = new Transaction({
+       transaction_id: transactionId,
+      amount,
+       user: userId,
+    });
 
-      await transaction.save();
-      console.log("Transaction saved");
+    await transaction.save();
 
-      return res.send({
-        url: reqPayment.request.res.responseUrl,
-      });
-    }
+    return res.json({ url: reqPayment.request.res.responseUrl });
   } catch (error) {
-    console.error("Esewa Init Error:", error.message);
-    return res.status(500).json("Esewa Payment Init Failed");
+    console.error("Esewa initiate error:", error);
+    return res.status(500).json({ message: "Failed to initiate payment" });
   }
 };
 
 const paymentStatus = async (req, res) => {
-  const { product_id } = req.body;
+  const { transactionId} = req.body;
+
+  if (!transactionId) {
+    return res.status(400).json({ message: "transactionid is required" });
+  }
 
   try {
-    const transaction = await Transaction.findOne({ product_id });
+    const transaction = await Transaction.findOne({ transaction_id: transactionId });
 
     if (!transaction) {
-      return res.status(400).json({ message: "Transaction not found" });
+      return res.status(404).json({ message: "Transaction not found" });
     }
 
     const paymentStatusCheck = await EsewaCheckStatus(
       transaction.amount,
-      transaction.product_id,
+      transaction.transaction_id,
       process.env.MERCHANT_ID,
       process.env.ESEWAPAYMENT_STATUS_CHECK_URL
     );
@@ -66,16 +69,13 @@ const paymentStatus = async (req, res) => {
       transaction.status = paymentStatusCheck.data.status;
       await transaction.save();
 
-      return res.status(200).json({
-        message: "Transaction status updated successfully",
-        status: transaction.status,
-      });
+      return res.status(200).json({ message: "Transaction status updated successfully" });
     } else {
-      return res.status(400).json({ message: "Failed to fetch payment status" });
+      return res.status(400).json({ message: "Payment verification failed" });
     }
   } catch (error) {
     console.error("Error updating transaction status:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

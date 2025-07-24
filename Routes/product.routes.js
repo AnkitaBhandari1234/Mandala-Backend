@@ -83,26 +83,46 @@ router.get("/:id", async (req, res) => {
 });
 
 
-// POST /api/products/recommend
 router.post("/recommend", async (req, res) => {
   try {
-      const { tags = [], attributes = [], productId } = req.body;
+    const { tags = [], attributes = [], productId } = req.body;
 
-    const filter = {
-      $or: [
-        { tags: { $in: tags } },
-        { attributes: { $in: attributes } },
-      ],
-      _id: { $ne: productId }, // ✅ exclude the current product
-    };
+    // Step 1: Fetch all other products (excluding the current one)
+    const allProducts = await Product.find({ _id: { $ne: productId } });
 
-    const recommended = await Product.find(filter).limit(10); // limit if needed
-    res.json(recommended);
+    // Step 2: Score products based on matching tags and attributes
+    const scoredProducts = allProducts.map((product) => {
+      let score = 0;
+
+      // Count matching tags
+      const matchingTags = product.tags?.filter((tag) => tags.includes(tag)) || [];
+      score += matchingTags.length;
+
+      // Count matching attributes
+      const matchingAttributes = product.attributes?.filter((attr) =>
+        attributes.includes(attr)
+      ) || [];
+      score += matchingAttributes.length;
+
+      return { product, score };
+    });
+
+    // Step 3: Sort products by similarity score in descending order
+    scoredProducts.sort((a, b) => b.score - a.score);
+
+    // Step 4: Return top N (e.g., 10) most similar products
+    const topRecommended = scoredProducts
+      .filter((item) => item.score > 0) // Only return similar ones
+      .slice(0, 10)
+      .map((item) => item.product); // Return just the product data
+
+    res.json(topRecommended);
   } catch (err) {
     console.error("Error recommending products:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
+
 
 
 
