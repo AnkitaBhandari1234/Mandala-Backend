@@ -16,6 +16,7 @@ const requireAuth = async (req, res, next) => {
        return res.status(401).json({ message: "User not found" });
     }
     req.user = user;
+    console.log("req.user populated:", req.user);
     next();
   } catch {
      console.log("Invalid or expired token");

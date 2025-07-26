@@ -11,7 +11,7 @@ router.get("/all", requireAuth, isAdmin, getAllOrders);
 // for login user if they purcgased any products 
 router.get("/my",requireAuth, getMyOrders); 
 // for esewa order placed in myorder
-router.post("/esewa/place", placeEsewaOrderAfterVerification);
+router.post("/esewa/place", requireAuth, placeEsewaOrderAfterVerification);
 
 router.get("/seller", requireAuth, isSeller, getSellerOrders); // Seller
 // admin view one order

@@ -2,6 +2,7 @@ const Order = require("../Models/order.model");
 const Product = require("../Models/product.model");
 const Transaction = require("../Models/transcation.model");
 
+
 // 🟩 GET ALL ORDERS (Admin) excluding delted user products
 const getAllOrders = async (req, res) => {
   try {
@@ -109,6 +110,8 @@ const getMyOrders = async (req, res) => {
     const orders = await Order.find({ user: req.user._id }).sort({
       createdAt: -1,
     });
+    
+console.log("🟩 My Orders found:", orders.length);
     res.json(orders);
   } catch (error) {
     console.error("Error fetching user's orders:", error.message);
@@ -174,15 +177,16 @@ const deleteOrder = async (req, res) => {
 
 // 🟩 PLACE ESEWA ORDER AFTER PAYMENT VERIFICATION
 const placeEsewaOrderAfterVerification = async (req, res) => {
-  const { transactionId, orderItems, shippingAddress, totalPrice, userId } =
+ console.log("ESewa placing order for user:", req.user); 
+  const { transactionId, orderItems, shippingAddress, totalPrice } =
     req.body;
 
   if (
     !transactionId ||
     !orderItems ||
     !shippingAddress ||
-    !totalPrice ||
-    !userId
+    !totalPrice 
+    
   ) {
     return res.status(400).json({ message: "Missing required fields" });
   }
@@ -215,10 +219,10 @@ const placeEsewaOrderAfterVerification = async (req, res) => {
         seller: product.seller,
       });
     }
-
+console.log("Placing order for user:", req.user);
     // Create order document for eSewa
     const order = await Order.create({
-      user: userId,
+      user: req.user?._id,
       orderItems: populatedItems.map((item) => ({
         name: item.name,
         qty: item.qty,
@@ -238,6 +242,9 @@ const placeEsewaOrderAfterVerification = async (req, res) => {
         paidAt: new Date(),
       },
     });
+    
+console.log("✅ Order successfully placed:", order);
+
 
     // Decrement stock for each product
     await Promise.all(

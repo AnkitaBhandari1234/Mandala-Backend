@@ -66,6 +66,38 @@ router.post(
     }
   }
 );
+// update product route
+
+router.put(
+  "/:id",
+  requireAuth,
+  isAdminOrSeller,
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updateFields = { ...req.body };
+
+      if (req.file) {
+        updateFields.image = [`ProductImages/${req.file.filename}`];
+      }
+
+      const updated = await Product.findByIdAndUpdate(id, updateFields, {
+        new: true,
+      });
+
+      if (!updated) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      res.json(updated);
+    } catch (err) {
+      console.error("Update error:", err.message);
+      res.status(500).json({ message: "Product update failed" });
+    }
+  }
+);
+
 
 // routes/product.route.js
 

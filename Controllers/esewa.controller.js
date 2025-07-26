@@ -1,6 +1,8 @@
 // backend/Controllers/esewa.controller.js
 const { EsewaPaymentGateway, EsewaCheckStatus } = require("esewajs");
 const Transaction = require("../Models/transcation.model");
+const Product=require("../Models/product.model");
+const Order=require("../Models/order.model")
 
 const EsewaInitiatePayment = async (req, res) => {
   const { amount, transactionId ,userId} = req.body;
@@ -45,10 +47,10 @@ const EsewaInitiatePayment = async (req, res) => {
 };
 
 const paymentStatus = async (req, res) => {
-  const { transactionId} = req.body;
+  const { transactionId,orderData, shippingAddress, totalPrice} = req.body;
 
-  if (!transactionId) {
-    return res.status(400).json({ message: "transactionid is required" });
+  if (!transactionId || !orderData || !shippingAddress || !totalPrice ) {
+    return res.status(400).json({ message: "transactionid and orderData is required" });
   }
 
   try {
@@ -68,6 +70,32 @@ const paymentStatus = async (req, res) => {
     if (paymentStatusCheck.status === 200) {
       transaction.status = paymentStatusCheck.data.status;
       await transaction.save();
+      
+      // ✅ 1. Create order
+      const newOrder = new Order({
+        user: transaction.user,
+        orderItems:orderData.items,
+        shippingAddress,
+        paymentMethod,
+        isPaid: true,
+        paidAt: Date.now(),
+        paymentMethod:'esewa',
+        paymentResult: {
+          id: transactionId,
+          status: paymentStatusCheck.data.status,
+        },
+      });
+
+      await newOrder.save();
+
+      // ✅ 2. Decrease stock
+      for (const item of orderData.items) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          product.stock -= item.qty;
+          await product.save();
+        }
+      }
 
       return res.status(200).json({ message: "Transaction status updated successfully" });
     } else {

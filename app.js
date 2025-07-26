@@ -29,6 +29,7 @@ const sellerRoutes = require("./Routes/seller.routes");
 
 const sellerRequestRoutes = require('./Routes/sellerRequest.routes');
 const { EsewaInitiatePayment, paymentStatus } = require('./Controllers/esewa.controller');
+const { requireAuth } = require('./Middlewares/auth.middleware');
 
 
 
@@ -70,7 +71,7 @@ app.use('/api/seller-request', sellerRequestRoutes);
 app.use("/api", dashboardRoutes);
 
 app.post("/api/initiate-payment", EsewaInitiatePayment);
-app.post("/api/payment-status", paymentStatus);
+app.post("/api/payment-status",requireAuth, paymentStatus);
 
 
 const transporter = nodemailer.createTransport({

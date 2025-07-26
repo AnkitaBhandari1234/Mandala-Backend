@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const Product = require("../Models/product.model");
-const { searchProducts } = require("../Controllers/product.controller")
+const { searchProducts} = require("../Controllers/product.controller")
 
 
 
 
 // routes/productRoutes.js
 router.get("/search", searchProducts);
+
+
 
 router.get('/featured', async (req, res) => {
   try {
