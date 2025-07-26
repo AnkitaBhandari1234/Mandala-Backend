@@ -2,19 +2,14 @@ const mongoose = require("mongoose");
 
 const orderItemSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  qty: { type: Number, required: true },
-  price: { type: Number, required: true },
+  qty: { type: Number, required: true ,min: 1 },
+  price: { type: Number, required: true,min: 0  },
   image: { type: Array },
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Product",
     required: true,
-  },
-    seller: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    
-  },
+  }
 });
 
 const shippingAddressSchema = new mongoose.Schema({
@@ -41,7 +36,18 @@ const orderSchema = new mongoose.Schema(
     },
     orderItems: [orderItemSchema],
     shippingAddress: shippingAddressSchema,
-    paymentMethod: { type: String, required: true },
+    paymentMethod: {
+  type: String,
+  required: true,
+  enum: ["cod", "esewa"]
+},
+paymentResult: {
+      transactionId: { type: String },
+      status: { type: String }, // e.g., 'Success', 'Failed'
+      signature: { type: String }, // Optional: for verification
+      paidAt: { type: Date }, // For accurate tracking
+    },
+
     totalPrice: { type: Number, required: true },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },

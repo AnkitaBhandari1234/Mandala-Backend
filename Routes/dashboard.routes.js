@@ -24,21 +24,28 @@ router.get("/users", requireAuth,isAdmin, getAllUsers);
 router.get("/seller/products", requireAuth, isSeller, getSellerProducts);
 
 
-// DELETE /api/dashboard/users/:id
-router.delete("/dashboard/users/:id", requireAuth, isAdmin, async (req, res) => {
-  try {
-    const deletedUser = await User.findByIdAndDelete(req.params.id);
 
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User not found" });
+// DELETE /api/dashboard/users/:id  (Soft Delete)
+router.delete("/users/:id", requireAuth, isAdmin, async (req, res) => {
+  try {
+    // Find user by ID first
+    const user = await User.findById(req.params.id);
+
+    if (!user || user.isDeleted) {
+      return res.status(404).json({ message: "User not found or already deleted" });
     }
 
-    res.json({ message: "User deleted successfully" });
+    // Mark user as deleted (soft delete)
+    user.isDeleted = true;
+    await user.save();
+
+    res.json({ message: "User deleted successfully (soft delete)" });
   } catch (error) {
     console.error("Error deleting user:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 
 module.exports = router;
